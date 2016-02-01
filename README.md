@@ -48,12 +48,18 @@ joinConfig.getTcpIpConfig().setEnabled(false);
 joinConfig.getMulticastConfig().setEnabled(false);
 joinConfig.getAwsConfig().setEnabled(false);
 DiscoveryConfig discoveryConfig = joinConfig.getDiscoveryConfig();
+//Set the discovery strategy to RangerDiscoveryStrategy
 DiscoveryStrategyConfig discoveryStrategyConfig = new DiscoveryStrategyConfig(new RangerDiscoveryStrategyFactory());
+//Zookeeper connection string used by ranger
 discoveryStrategyConfig.addProperty("zk-connection-string", testingCluster.getConnectString());
+//Namespace that needs to be used by ranger for this service
 discoveryStrategyConfig.addProperty("namespace", "hz_disco");
+//Service name that needs to be used
 discoveryStrategyConfig.addProperty("service-name", "hz_disco_test");
+//Hazelcast port that needs to be used for registration
 discoveryStrategyConfig.addProperty("port", "5701");
 discoveryConfig.addDiscoveryStrategyConfig(discoveryStrategyConfig);
+//Create the hazelcast instance
 HazelcastInstance hazelcast = Hazelcast.newHazelcastInstance(config);
 ```
 
