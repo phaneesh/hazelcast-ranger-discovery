@@ -47,7 +47,25 @@ public class DiscoveryTest {
     }
 
     @Test
-    public void testDiscovery() throws IOException {
+    public void testSingleMemberDiscovery() throws IOException {
+        HazelcastInstance hazelcast = getHazelcastInstance(5701);
+        assertTrue(hazelcast.getCluster().getMembers().size() > 0);
+        hazelcast.shutdown();
+    }
+
+    @Test
+    public void testMultiMemberDiscovery() {
+        HazelcastInstance hazelcast1 = getHazelcastInstance(5701);
+        HazelcastInstance hazelcast2 = getHazelcastInstance(5801);
+        HazelcastInstance hazelcast3 = getHazelcastInstance(5901);
+        assertTrue(hazelcast3.getCluster().getMembers().size() > 0);
+        assertTrue(hazelcast3.getCluster().getMembers().size() == 3);
+        hazelcast1.shutdown();
+        hazelcast2.shutdown();
+        hazelcast3.shutdown();
+    }
+
+    private HazelcastInstance getHazelcastInstance(int port) {
         Config config = new Config();
         config.setProperty("hazelcast.discovery.enabled", "true");
         NetworkConfig networkConfig = config.getNetworkConfig();
@@ -60,9 +78,8 @@ public class DiscoveryTest {
         discoveryStrategyConfig.addProperty("zk-connection-string", testingCluster.getConnectString());
         discoveryStrategyConfig.addProperty("namespace", "hz_disco");
         discoveryStrategyConfig.addProperty("service-name", "hz_disco_test");
-        discoveryStrategyConfig.addProperty("port", "5701");
+        discoveryStrategyConfig.addProperty("port", String.valueOf(port));
         discoveryConfig.addDiscoveryStrategyConfig(discoveryStrategyConfig);
-        HazelcastInstance hazelcast = Hazelcast.newHazelcastInstance(config);
-        assertTrue(hazelcast.getCluster().getMembers().size() > 0);
+        return Hazelcast.newHazelcastInstance(config);
     }
 }
