@@ -1,4 +1,4 @@
-# Hazelcast Ranger Discovery
+# Hazelcast Ranger Discovery [![Travis build status](https://travis-ci.org/phaneesh/hazelcast-ranger-discovery.svg?branch=master)](https://travis-ci.org/phaneesh/hazelcast-ranger-discovery)
 
 This is a discovery strategy extension for Hazelcast to make discovery work on [ranger](https://github.com/flipkart-incubator/ranger).
 This library compiles only on Java 8.
