@@ -9,6 +9,7 @@ dist/
 /deb
 .idea
 .idea_modules
+atlassian-ide-plugin.xml
 .DS_Store
 log
 logs
