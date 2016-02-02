@@ -69,7 +69,7 @@ public class RangerDiscoveryStrategy extends AbstractDiscoveryStrategy {
     }
 
     public Iterable<DiscoveryNode> discoverNodes() {
-        return RangerServiceDiscoveryHelper.getAllNodes().stream().map( n -> {
+        return RangerServiceDiscoveryHelper.getAllNodes().stream().filter( h -> !h.getHost().equals(host)).map( n -> {
             Map<String, Object> attributes = Collections.<String, Object>singletonMap("hostname", n.getHost());
             try {
                 return new SimpleDiscoveryNode(new Address(n.getHost(), n.getPort()), attributes);
