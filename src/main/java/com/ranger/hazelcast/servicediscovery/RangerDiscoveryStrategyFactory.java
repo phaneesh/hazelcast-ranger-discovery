@@ -39,6 +39,7 @@ public class RangerDiscoveryStrategyFactory implements DiscoveryStrategyFactory 
         properties.add(RangerDiscoveryConfiguration.PORT);
         properties.add(RangerDiscoveryConfiguration.SERVICE_NAME);
         properties.add(RangerDiscoveryConfiguration.ZK_CONNECTION_STRING);
+        properties.add(RangerDiscoveryConfiguration.HOST);
     }
 
     @Override

@@ -30,6 +30,8 @@ public class RangerDiscoveryConfiguration {
 
     public static final PropertyDefinition PORT = new SimplePropertyDefinition("port", PropertyTypeConverter.STRING);
 
+    public static final PropertyDefinition HOST = new SimplePropertyDefinition("host", PropertyTypeConverter.STRING);
+
     private RangerDiscoveryConfiguration() {
 
     }

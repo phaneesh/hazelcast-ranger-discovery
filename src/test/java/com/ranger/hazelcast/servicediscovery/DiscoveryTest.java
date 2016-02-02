@@ -19,12 +19,15 @@ package com.ranger.hazelcast.servicediscovery;
 import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.instance.GroupProperty;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import static org.junit.Assert.assertTrue;
 
@@ -54,7 +57,7 @@ public class DiscoveryTest {
     }
 
     @Test
-    public void testMultiMemberDiscovery() {
+    public void testMultiMemberDiscovery() throws UnknownHostException {
         HazelcastInstance hazelcast1 = getHazelcastInstance(5701);
         HazelcastInstance hazelcast2 = getHazelcastInstance(5801);
         HazelcastInstance hazelcast3 = getHazelcastInstance(5901);
@@ -65,10 +68,14 @@ public class DiscoveryTest {
         hazelcast3.shutdown();
     }
 
-    private HazelcastInstance getHazelcastInstance(int port) {
+    private HazelcastInstance getHazelcastInstance(int port) throws UnknownHostException {
         Config config = new Config();
-        config.setProperty("hazelcast.discovery.enabled", "true");
+        config.setProperty(GroupProperty.DISCOVERY_SPI_ENABLED, "true");
+        config.setProperty(GroupProperty.DISCOVERY_SPI_PUBLIC_IP_ENABLED, "true");
+        config.setProperty(GroupProperty.SOCKET_CLIENT_BIND_ANY, "false");
+        config.setProperty(GroupProperty.SOCKET_BIND_ANY, "false");
         NetworkConfig networkConfig = config.getNetworkConfig();
+        networkConfig.getInterfaces().addInterface(InetAddress.getLocalHost().getHostAddress()).setEnabled(true);
         JoinConfig joinConfig = networkConfig.getJoin();
         joinConfig.getTcpIpConfig().setEnabled(false);
         joinConfig.getMulticastConfig().setEnabled(false);
@@ -78,6 +85,7 @@ public class DiscoveryTest {
         discoveryStrategyConfig.addProperty("zk-connection-string", testingCluster.getConnectString());
         discoveryStrategyConfig.addProperty("namespace", "hz_disco");
         discoveryStrategyConfig.addProperty("service-name", "hz_disco_test");
+        discoveryStrategyConfig.addProperty("host", InetAddress.getLocalHost().getHostAddress());
         discoveryStrategyConfig.addProperty("port", String.valueOf(port));
         discoveryConfig.addDiscoveryStrategyConfig(discoveryStrategyConfig);
         return Hazelcast.newHazelcastInstance(config);
