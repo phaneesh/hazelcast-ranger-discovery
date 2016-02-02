@@ -41,7 +41,10 @@ Use the following maven dependency:
 ```java
 Config config = new Config();
 //This is important to enable the discovery strategy
-config.setProperty("hazelcast.discovery.enabled", "true");
+config.setProperty(GroupProperty.DISCOVERY_SPI_ENABLED, "true");
+config.setProperty(GroupProperty.DISCOVERY_SPI_PUBLIC_IP_ENABLED, "true");
+config.setProperty(GroupProperty.SOCKET_CLIENT_BIND_ANY, "false");
+config.setProperty(GroupProperty.SOCKET_BIND_ANY, "false");
 NetworkConfig networkConfig = config.getNetworkConfig();
 JoinConfig joinConfig = networkConfig.getJoin();
 joinConfig.getTcpIpConfig().setEnabled(false);
@@ -61,6 +64,19 @@ discoveryStrategyConfig.addProperty("port", "5701");
 discoveryConfig.addDiscoveryStrategyConfig(discoveryStrategyConfig);
 //Create the hazelcast instance
 HazelcastInstance hazelcast = Hazelcast.newHazelcastInstance(config);
+```
+
+### Note
+If you are using hazelcast in applications deployed on DCOS; then you should set the following configuration for discovery to work
+
+```java
+NetworkConfig networkConfig = config.getNetworkConfig();
+networkConfig.setPublicAddress("<public ip address/host name>" +":" +"<public port>");
+```
+Example: (On DCOS + Marathon assuming hazelcast container port is set to 5701)
+```java
+NetworkConfig networkConfig = config.getNetworkConfig();
+networkConfig.setPublicAddress(System.getenv("HOST") +":" +System.getenv("PORT_5701"))
 ```
 
 LICENSE
