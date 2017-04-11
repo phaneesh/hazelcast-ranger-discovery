@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Created by phaneesh on 01/02/16.
+ * @author phaneesh
  */
 public class RangerDiscoveryStrategy extends AbstractDiscoveryStrategy {
 
@@ -38,22 +38,20 @@ public class RangerDiscoveryStrategy extends AbstractDiscoveryStrategy {
 
     private String serviceName;
 
-    private String host;
-
-    private int port;
+    private final DiscoveryNode discoveryNode;
 
     private ILogger logger;
 
-    public RangerDiscoveryStrategy(final ILogger logger, Map<String, Comparable> properties) {
+    public RangerDiscoveryStrategy(final DiscoveryNode discoveryNode, final ILogger logger, Map<String, Comparable> properties) {
         super(logger, properties);
         this.zkConnectionString = getOrNull("discovery.ranger", RangerDiscoveryConfiguration.ZK_CONNECTION_STRING);
         this.namespace = getOrNull("discovery.ranger", RangerDiscoveryConfiguration.NAMESPACE);
         this.serviceName = getOrNull("discovery.ranger", RangerDiscoveryConfiguration.SERVICE_NAME);
-        this.host = getOrNull("discovery.ranger", RangerDiscoveryConfiguration.HOST);
-        this.port = Integer.parseInt(getOrNull("discovery.ranger", RangerDiscoveryConfiguration.PORT));
+        this.discoveryNode = discoveryNode;
         this.logger = logger;
         try {
-            RangerServiceDiscoveryHelper.start(zkConnectionString, namespace, serviceName, host, port, logger);
+            RangerServiceDiscoveryHelper.start(zkConnectionString, namespace, serviceName,
+                    discoveryNode.getPublicAddress().getHost(), discoveryNode.getPublicAddress().getPort(), logger);
         } catch (Exception e) {
            logger.severe("Failed to start service discovery!", e);
         }

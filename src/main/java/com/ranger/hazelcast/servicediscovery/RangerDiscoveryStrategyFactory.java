@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Created by phaneesh on 01/02/16.
+ * @author phaneesh
  */
 public class RangerDiscoveryStrategyFactory implements DiscoveryStrategyFactory {
 
@@ -36,10 +36,8 @@ public class RangerDiscoveryStrategyFactory implements DiscoveryStrategyFactory 
     public RangerDiscoveryStrategyFactory() {
         properties = new ArrayList<>();
         properties.add(RangerDiscoveryConfiguration.NAMESPACE);
-        properties.add(RangerDiscoveryConfiguration.PORT);
         properties.add(RangerDiscoveryConfiguration.SERVICE_NAME);
         properties.add(RangerDiscoveryConfiguration.ZK_CONNECTION_STRING);
-        properties.add(RangerDiscoveryConfiguration.HOST);
     }
 
     @Override
@@ -49,7 +47,7 @@ public class RangerDiscoveryStrategyFactory implements DiscoveryStrategyFactory 
 
     @Override
     public DiscoveryStrategy newDiscoveryStrategy(DiscoveryNode discoveryNode, ILogger logger, Map<String, Comparable> properties) {
-        return new RangerDiscoveryStrategy(logger, properties);
+        return new RangerDiscoveryStrategy(discoveryNode, logger, properties);
     }
 
     @Override

@@ -33,7 +33,7 @@ Use the following maven dependency:
 <dependency>
     <groupId>com.ranger.hazelcast.servicediscovery</groupId>
     <artifactId>hazelcast-ranger-discovery</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3</version>
 </dependency>
 ```
 
@@ -59,8 +59,6 @@ discoveryStrategyConfig.addProperty("zk-connection-string", testingCluster.getCo
 discoveryStrategyConfig.addProperty("namespace", "hz_disco");
 //Service name that needs to be used
 discoveryStrategyConfig.addProperty("service-name", "hz_disco_test");
-//Hazelcast port that needs to be used for registration
-discoveryStrategyConfig.addProperty("port", "5701");
 discoveryConfig.addDiscoveryStrategyConfig(discoveryStrategyConfig);
 //Create the hazelcast instance
 HazelcastInstance hazelcast = Hazelcast.newHazelcastInstance(config);
