@@ -70,12 +70,12 @@ public class DiscoveryTest {
 
     private HazelcastInstance getHazelcastInstance(int port) throws UnknownHostException {
         Config config = new Config();
-        config.setProperty(GroupProperty.DISCOVERY_SPI_ENABLED, "true");
-        config.setProperty(GroupProperty.DISCOVERY_SPI_PUBLIC_IP_ENABLED, "true");
-        config.setProperty(GroupProperty.SOCKET_CLIENT_BIND_ANY, "false");
-        config.setProperty(GroupProperty.SOCKET_BIND_ANY, "false");
+        config.setProperty("hazelcast.discovery.enabled", "true");
+        config.setProperty("hazelcast.discovery.public.ip.enabled", "true");
+        config.setProperty("hazelcast.socket.client.bind.any", "true");
+        config.setProperty("hazelcast.socket.bind.any", "true");
         NetworkConfig networkConfig = config.getNetworkConfig();
-        networkConfig.getInterfaces().addInterface(InetAddress.getLocalHost().getHostAddress()).setEnabled(true);
+        networkConfig.getInterfaces().addInterface("127.0.0.1").setEnabled(true);
         JoinConfig joinConfig = networkConfig.getJoin();
         joinConfig.getTcpIpConfig().setEnabled(false);
         joinConfig.getMulticastConfig().setEnabled(false);
@@ -85,7 +85,7 @@ public class DiscoveryTest {
         discoveryStrategyConfig.addProperty("zk-connection-string", testingCluster.getConnectString());
         discoveryStrategyConfig.addProperty("namespace", "hz_disco");
         discoveryStrategyConfig.addProperty("service-name", "hz_disco_test");
-        discoveryStrategyConfig.addProperty("host", InetAddress.getLocalHost().getHostAddress());
+        discoveryStrategyConfig.addProperty("host", "127.0.0.1");
         discoveryStrategyConfig.addProperty("port", String.valueOf(port));
         discoveryConfig.addDiscoveryStrategyConfig(discoveryStrategyConfig);
         return Hazelcast.newHazelcastInstance(config);
