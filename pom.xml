@@ -4,7 +4,7 @@
 
     <groupId>com.ranger.hazelcast.servicediscovery</groupId>
     <artifactId>hazelcast-ranger-discovery</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <packaging>jar</packaging>
 
     <name>hazelcast-ranger-discovery</name>
@@ -44,10 +44,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hazelcast.version>3.6</hazelcast.version>
-        <ranger.version>0.2.1</ranger.version>
+        <hazelcast.version>3.8</hazelcast.version>
+        <ranger.version>0.3.0</ranger.version>
         <junit.version>4.12</junit.version>
-        <jackson.version>2.5.0</jackson.version>
+        <jackson.version>2.6.3</jackson.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -90,7 +90,7 @@
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-test</artifactId>
-            <version>2.7.0</version>
+            <version>3.1.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -33,7 +33,7 @@ Use the following maven dependency:
 <dependency>
     <groupId>com.ranger.hazelcast.servicediscovery</groupId>
     <artifactId>hazelcast-ranger-discovery</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
 </dependency>
 ```
 
@@ -41,10 +41,10 @@ Use the following maven dependency:
 ```java
 Config config = new Config();
 //This is important to enable the discovery strategy
-config.setProperty(GroupProperty.DISCOVERY_SPI_ENABLED, "true");
-config.setProperty(GroupProperty.DISCOVERY_SPI_PUBLIC_IP_ENABLED, "true");
-config.setProperty(GroupProperty.SOCKET_CLIENT_BIND_ANY, "false");
-config.setProperty(GroupProperty.SOCKET_BIND_ANY, "false");
+config.setProperty("hazelcast.discovery.enabled", "true");
+config.setProperty("hazelcast.discovery.public.ip.enabled", "true");
+config.setProperty("hazelcast.socket.client.bind.any", "true");
+config.setProperty("hazelcast.socket.bind.any", "true");
 NetworkConfig networkConfig = config.getNetworkConfig();
 JoinConfig joinConfig = networkConfig.getJoin();
 joinConfig.getTcpIpConfig().setEnabled(false);

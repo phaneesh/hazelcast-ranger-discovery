@@ -19,7 +19,6 @@ package com.ranger.hazelcast.servicediscovery;
 import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.instance.GroupProperty;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Before;
@@ -59,8 +58,8 @@ public class DiscoveryTest {
     @Test
     public void testMultiMemberDiscovery() throws UnknownHostException {
         HazelcastInstance hazelcast1 = getHazelcastInstance(5701);
-        HazelcastInstance hazelcast2 = getHazelcastInstance(5801);
-        HazelcastInstance hazelcast3 = getHazelcastInstance(5901);
+        HazelcastInstance hazelcast2 = getHazelcastInstance(5802);
+        HazelcastInstance hazelcast3 = getHazelcastInstance(5903);
         assertTrue(hazelcast3.getCluster().getMembers().size() > 0);
         assertTrue(hazelcast3.getCluster().getMembers().size() == 3);
         hazelcast1.shutdown();
@@ -75,7 +74,8 @@ public class DiscoveryTest {
         config.setProperty("hazelcast.socket.client.bind.any", "true");
         config.setProperty("hazelcast.socket.bind.any", "true");
         NetworkConfig networkConfig = config.getNetworkConfig();
-        networkConfig.getInterfaces().addInterface("127.0.0.1").setEnabled(true);
+        //networkConfig.setPublicAddress(InetAddress.getLocalHost().getHostAddress() + ":" + port);
+        networkConfig.getInterfaces().addInterface(InetAddress.getLocalHost().getHostAddress()).setEnabled(true);
         JoinConfig joinConfig = networkConfig.getJoin();
         joinConfig.getTcpIpConfig().setEnabled(false);
         joinConfig.getMulticastConfig().setEnabled(false);
@@ -85,7 +85,7 @@ public class DiscoveryTest {
         discoveryStrategyConfig.addProperty("zk-connection-string", testingCluster.getConnectString());
         discoveryStrategyConfig.addProperty("namespace", "hz_disco");
         discoveryStrategyConfig.addProperty("service-name", "hz_disco_test");
-        discoveryStrategyConfig.addProperty("host", "127.0.0.1");
+        discoveryStrategyConfig.addProperty("host", InetAddress.getLocalHost().getHostAddress());
         discoveryStrategyConfig.addProperty("port", String.valueOf(port));
         discoveryConfig.addDiscoveryStrategyConfig(discoveryStrategyConfig);
         return Hazelcast.newHazelcastInstance(config);
