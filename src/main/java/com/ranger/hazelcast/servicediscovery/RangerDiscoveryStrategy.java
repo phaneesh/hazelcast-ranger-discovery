@@ -22,6 +22,7 @@ import com.hazelcast.spi.discovery.AbstractDiscoveryStrategy;
 import com.hazelcast.spi.discovery.DiscoveryNode;
 import com.hazelcast.spi.discovery.SimpleDiscoveryNode;
 
+import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Map;
@@ -49,9 +50,11 @@ public class RangerDiscoveryStrategy extends AbstractDiscoveryStrategy {
         this.serviceName = getOrNull("discovery.ranger", RangerDiscoveryConfiguration.SERVICE_NAME);
         this.discoveryNode = discoveryNode;
         this.logger = logger;
+
         try {
-            RangerServiceDiscoveryHelper.start(zkConnectionString, namespace, serviceName,
-                    discoveryNode.getPublicAddress().getHost(), discoveryNode.getPublicAddress().getPort(), logger);
+            String host = discoveryNode != null ? discoveryNode.getPublicAddress().getHost() : null;
+            int port = discoveryNode != null ? discoveryNode.getPublicAddress().getPort() : 0;
+            RangerServiceDiscoveryHelper.start(zkConnectionString, namespace, serviceName, host, port, logger);
         } catch (Exception e) {
            logger.severe("Failed to start service discovery!", e);
         }

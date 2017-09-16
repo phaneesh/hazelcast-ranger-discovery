@@ -40,7 +40,7 @@ public class RangerServiceDiscoveryHelper {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static void start(final String zkConnectionString, final String namespace, final String serviceName, final String hostname, final int port, final ILogger logger) throws Exception {
-        if(serviceProvider == null) {
+        if(serviceProvider == null && hostname != null) {
             serviceProvider = ServiceProviderBuilders
                     .unshardedServiceProviderBuilder()
                     .withConnectionString(zkConnectionString)
