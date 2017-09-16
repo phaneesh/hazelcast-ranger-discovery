@@ -22,7 +22,6 @@ import com.hazelcast.spi.discovery.AbstractDiscoveryStrategy;
 import com.hazelcast.spi.discovery.DiscoveryNode;
 import com.hazelcast.spi.discovery.SimpleDiscoveryNode;
 
-import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Map;
