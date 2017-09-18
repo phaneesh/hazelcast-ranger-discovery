@@ -31,7 +31,7 @@ import com.hazelcast.logging.ILogger;
 import java.io.IOException;
 import java.util.List;
 
-public class RangerServiceDiscoveryHelper {
+class RangerServiceDiscoveryHelper {
 
     private static ServiceProvider<UnshardedClusterInfo> serviceProvider;
 
@@ -39,7 +39,7 @@ public class RangerServiceDiscoveryHelper {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static void start(final String zkConnectionString, final String namespace, final String serviceName, final String hostname, final int port, final ILogger logger) throws Exception {
+    static void start(final String zkConnectionString, final String namespace, final String serviceName, final String hostname, final int port, final ILogger logger) throws Exception {
         if(serviceProvider == null && hostname != null) {
             serviceProvider = ServiceProviderBuilders
                     .unshardedServiceProviderBuilder()
@@ -80,11 +80,11 @@ public class RangerServiceDiscoveryHelper {
         }
     }
 
-    public static List<ServiceNode<UnshardedClusterInfo>> getAllNodes() {
+    static List<ServiceNode<UnshardedClusterInfo>> getAllNodes() {
         return serviceFinder.getAll(null);
     }
 
-    public static void stop() throws Exception {
+    static void stop() throws Exception {
         if(serviceProvider != null) {
             serviceProvider.stop();
         }

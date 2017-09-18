@@ -20,13 +20,13 @@ import com.hazelcast.config.properties.PropertyDefinition;
 import com.hazelcast.config.properties.PropertyTypeConverter;
 import com.hazelcast.config.properties.SimplePropertyDefinition;
 
-public class RangerDiscoveryConfiguration {
+class RangerDiscoveryConfiguration {
 
-    public static final PropertyDefinition ZK_CONNECTION_STRING = new SimplePropertyDefinition("zk-connection-string", PropertyTypeConverter.STRING);
+    static final PropertyDefinition ZK_CONNECTION_STRING = new SimplePropertyDefinition("zk-connection-string", PropertyTypeConverter.STRING);
 
-    public static final PropertyDefinition NAMESPACE = new SimplePropertyDefinition("namespace", PropertyTypeConverter.STRING);
+    static final PropertyDefinition NAMESPACE = new SimplePropertyDefinition("namespace", PropertyTypeConverter.STRING);
 
-    public static final PropertyDefinition SERVICE_NAME = new SimplePropertyDefinition("service-name", PropertyTypeConverter.STRING);
+    static final PropertyDefinition SERVICE_NAME = new SimplePropertyDefinition("service-name", PropertyTypeConverter.STRING);
 
     private RangerDiscoveryConfiguration() {
 

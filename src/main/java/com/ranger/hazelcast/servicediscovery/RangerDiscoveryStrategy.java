@@ -32,24 +32,15 @@ import java.util.stream.Collectors;
  */
 public class RangerDiscoveryStrategy extends AbstractDiscoveryStrategy {
 
-    private String zkConnectionString;
-
-    private String namespace;
-
-    private String serviceName;
-
-    private final DiscoveryNode discoveryNode;
 
     private ILogger logger;
 
     public RangerDiscoveryStrategy(final DiscoveryNode discoveryNode, final ILogger logger, Map<String, Comparable> properties) {
         super(logger, properties);
-        this.zkConnectionString = getOrNull("discovery.ranger", RangerDiscoveryConfiguration.ZK_CONNECTION_STRING);
-        this.namespace = getOrNull("discovery.ranger", RangerDiscoveryConfiguration.NAMESPACE);
-        this.serviceName = getOrNull("discovery.ranger", RangerDiscoveryConfiguration.SERVICE_NAME);
-        this.discoveryNode = discoveryNode;
+        String zkConnectionString = getOrNull("discovery.ranger", RangerDiscoveryConfiguration.ZK_CONNECTION_STRING);
+        String namespace = getOrNull("discovery.ranger", RangerDiscoveryConfiguration.NAMESPACE);
+        String serviceName = getOrNull("discovery.ranger", RangerDiscoveryConfiguration.SERVICE_NAME);
         this.logger = logger;
-
         try {
             String host = discoveryNode != null ? discoveryNode.getPublicAddress().getHost() : null;
             int port = discoveryNode != null ? discoveryNode.getPublicAddress().getPort() : 0;
@@ -57,20 +48,18 @@ public class RangerDiscoveryStrategy extends AbstractDiscoveryStrategy {
         } catch (Exception e) {
            logger.severe("Failed to start service discovery!", e);
         }
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                try {
-                    RangerServiceDiscoveryHelper.stop();
-                } catch (Exception e) {
-                    logger.severe("Error adding shutdown hook!", e);
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                RangerServiceDiscoveryHelper.stop();
+            } catch (Exception e) {
+                logger.severe("Error adding shutdown hook!", e);
             }
-        });
+        }));
     }
 
     public Iterable<DiscoveryNode> discoverNodes() {
         return RangerServiceDiscoveryHelper.getAllNodes().stream().map( n -> {
-            Map<String, Object> attributes = Collections.<String, Object>singletonMap("hostname", n.getHost());
+            Map<String, Object> attributes = Collections.singletonMap("hostname", n.getHost());
             try {
                 return new SimpleDiscoveryNode(new Address(n.getHost(), n.getPort()), attributes);
             } catch (UnknownHostException e) {
