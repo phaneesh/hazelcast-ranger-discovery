@@ -16,6 +16,8 @@
 
 package com.ranger.hazelcast.servicediscovery;
 
+import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -67,6 +69,17 @@ public class DiscoveryTest {
         hazelcast3.shutdown();
     }
 
+    @Test
+    public void testClientDiscovery() throws UnknownHostException {
+        HazelcastInstance hazelcast1 = getHazelcastInstance();
+        HazelcastInstance hazelcast2 = getHazelcastInstance();
+        HazelcastInstance hazelcast3 = getHazelcastInstance();
+        HazelcastInstance hazelcastInstance = getHazelcastClientInstance();
+        assertTrue(hazelcastInstance.getCluster().getMembers().size() > 0);
+        assertTrue(hazelcastInstance.getCluster().getMembers().size() == 3);
+    }
+
+
     private HazelcastInstance getHazelcastInstance() throws UnknownHostException {
         Config config = new Config();
         config.setProperty("hazelcast.discovery.enabled", "true");
@@ -87,5 +100,21 @@ public class DiscoveryTest {
         discoveryStrategyConfig.addProperty("service-name", "hz_disco_test");
         discoveryConfig.addDiscoveryStrategyConfig(discoveryStrategyConfig);
         return Hazelcast.newHazelcastInstance(config);
+    }
+
+
+    private HazelcastInstance getHazelcastClientInstance() throws UnknownHostException {
+        ClientConfig config = new ClientConfig();
+        config.setProperty("hazelcast.discovery.enabled", "true");
+        config.setProperty("hazelcast.discovery.public.ip.enabled", "true");
+        config.setProperty("hazelcast.socket.client.bind.any", "true");
+        config.setProperty("hazelcast.socket.bind.any", "true");
+        DiscoveryConfig discoveryConfig = config.getNetworkConfig().getDiscoveryConfig();
+        DiscoveryStrategyConfig discoveryStrategyConfig = new DiscoveryStrategyConfig(new RangerDiscoveryStrategyFactory());
+        discoveryStrategyConfig.addProperty("zk-connection-string", testingCluster.getConnectString());
+        discoveryStrategyConfig.addProperty("namespace", "hz_disco");
+        discoveryStrategyConfig.addProperty("service-name", "hz_disco_test");
+        discoveryConfig.addDiscoveryStrategyConfig(discoveryStrategyConfig);
+        return HazelcastClient.newHazelcastClient(config);
     }
 }

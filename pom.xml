@@ -4,7 +4,7 @@
 
     <groupId>com.ranger.hazelcast.servicediscovery</groupId>
     <artifactId>hazelcast-ranger-discovery</artifactId>
-    <version>0.1.4</version>
+    <version>0.1.5</version>
     <packaging>jar</packaging>
 
     <name>hazelcast-ranger-discovery</name>
@@ -44,7 +44,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hazelcast.version>3.8</hazelcast.version>
+        <hazelcast.version>3.8.5</hazelcast.version>
         <ranger.version>0.3.0</ranger.version>
         <junit.version>4.12</junit.version>
         <jackson.version>2.6.3</jackson.version>
@@ -64,6 +64,11 @@
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast</artifactId>
+            <version>${hazelcast.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast-client</artifactId>
             <version>${hazelcast.version}</version>
         </dependency>
         <dependency>
