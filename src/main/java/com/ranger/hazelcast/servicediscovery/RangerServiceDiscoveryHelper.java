@@ -33,14 +33,14 @@ import java.util.List;
 
 class RangerServiceDiscoveryHelper {
 
-    private static ServiceProvider<UnshardedClusterInfo> serviceProvider;
+    private ServiceProvider<UnshardedClusterInfo> serviceProvider;
 
-    private static UnshardedClusterFinder serviceFinder;
+    private UnshardedClusterFinder serviceFinder;
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    static void start(final String zkConnectionString, final String namespace, final String serviceName, final String hostname, final int port, final ILogger logger) throws Exception {
-        if(serviceProvider == null && hostname != null) {
+    void start(final String zkConnectionString, final String namespace, final String serviceName, final String hostname, final int port, final ILogger logger) throws Exception {
+        if(serviceProvider == null && hostname != null && port > 0) {
             serviceProvider = ServiceProviderBuilders
                     .unshardedServiceProviderBuilder()
                     .withConnectionString(zkConnectionString)
@@ -80,11 +80,11 @@ class RangerServiceDiscoveryHelper {
         }
     }
 
-    static List<ServiceNode<UnshardedClusterInfo>> getAllNodes() {
+    List<ServiceNode<UnshardedClusterInfo>> getAllNodes() {
         return serviceFinder.getAll(null);
     }
 
-    static void stop() throws Exception {
+    void stop() throws Exception {
         if(serviceProvider != null) {
             serviceProvider.stop();
         }

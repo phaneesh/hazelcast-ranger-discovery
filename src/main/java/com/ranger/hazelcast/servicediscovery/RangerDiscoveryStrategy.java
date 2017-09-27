@@ -22,6 +22,7 @@ import com.hazelcast.spi.discovery.AbstractDiscoveryStrategy;
 import com.hazelcast.spi.discovery.DiscoveryNode;
 import com.hazelcast.spi.discovery.SimpleDiscoveryNode;
 
+import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Map;
@@ -34,23 +35,27 @@ public class RangerDiscoveryStrategy extends AbstractDiscoveryStrategy {
 
 
     private ILogger logger;
+    private RangerServiceDiscoveryHelper rangerServiceDiscoveryHelper;
 
     public RangerDiscoveryStrategy(final DiscoveryNode discoveryNode, final ILogger logger, Map<String, Comparable> properties) {
         super(logger, properties);
         String zkConnectionString = getOrNull("discovery.ranger", RangerDiscoveryConfiguration.ZK_CONNECTION_STRING);
         String namespace = getOrNull("discovery.ranger", RangerDiscoveryConfiguration.NAMESPACE);
         String serviceName = getOrNull("discovery.ranger", RangerDiscoveryConfiguration.SERVICE_NAME);
+        this.rangerServiceDiscoveryHelper = new RangerServiceDiscoveryHelper();
         this.logger = logger;
         try {
             String host = discoveryNode != null ? discoveryNode.getPublicAddress().getHost() : null;
+            if(!Inet4Address.getLocalHost().getHostAddress().equals(host))
+                host = Inet4Address.getLocalHost().getHostAddress();
             int port = discoveryNode != null ? discoveryNode.getPublicAddress().getPort() : 0;
-            RangerServiceDiscoveryHelper.start(zkConnectionString, namespace, serviceName, host, port, logger);
+            rangerServiceDiscoveryHelper.start(zkConnectionString, namespace, serviceName, host, port, logger);
         } catch (Exception e) {
            logger.severe("Failed to start service discovery!", e);
         }
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                RangerServiceDiscoveryHelper.stop();
+                rangerServiceDiscoveryHelper.stop();
             } catch (Exception e) {
                 logger.severe("Error adding shutdown hook!", e);
             }
@@ -58,7 +63,7 @@ public class RangerDiscoveryStrategy extends AbstractDiscoveryStrategy {
     }
 
     public Iterable<DiscoveryNode> discoverNodes() {
-        return RangerServiceDiscoveryHelper.getAllNodes().stream().map( n -> {
+        return rangerServiceDiscoveryHelper.getAllNodes().stream().map( n -> {
             Map<String, Object> attributes = Collections.singletonMap("hostname", n.getHost());
             try {
                 return new SimpleDiscoveryNode(new Address(n.getHost(), n.getPort()), attributes);
