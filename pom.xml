@@ -4,7 +4,7 @@
 
     <groupId>com.ranger.hazelcast.servicediscovery</groupId>
     <artifactId>hazelcast-ranger-discovery</artifactId>
-    <version>0.1.6</version>
+    <version>0.1.9</version>
     <packaging>jar</packaging>
 
     <name>hazelcast-ranger-discovery</name>

@@ -16,6 +16,7 @@
 
 package com.ranger.hazelcast.servicediscovery;
 
+import com.google.common.base.Strings;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.nio.Address;
 import com.hazelcast.spi.discovery.AbstractDiscoveryStrategy;
@@ -46,7 +47,7 @@ public class RangerDiscoveryStrategy extends AbstractDiscoveryStrategy {
         this.logger = logger;
         try {
             String host = discoveryNode != null ? discoveryNode.getPublicAddress().getHost() : null;
-            if(!Inet4Address.getLocalHost().getHostAddress().equals(host))
+            if(!Inet4Address.getLocalHost().getHostAddress().equals(host) && Strings.isNullOrEmpty(host))
                 host = Inet4Address.getLocalHost().getHostAddress();
             int port = discoveryNode != null ? discoveryNode.getPublicAddress().getPort() : 0;
             rangerServiceDiscoveryHelper.start(zkConnectionString, namespace, serviceName, host, port, logger);
