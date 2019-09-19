@@ -4,7 +4,7 @@ This is a discovery strategy extension for Hazelcast to make discovery work on [
 This library compiles only on Java 8.
  
 ## Dependencies
-* ranger 0.2.1  
+* ranger 0.6.2  
 
 ## Usage
 Hazelcast Ranger Discovery provides a easy way to enable member discovery with elastic applications on docker & DCOS 
@@ -33,7 +33,7 @@ Use the following maven dependency:
 <dependency>
     <groupId>com.ranger.hazelcast.servicediscovery</groupId>
     <artifactId>hazelcast-ranger-discovery</artifactId>
-    <version>0.1.8</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 

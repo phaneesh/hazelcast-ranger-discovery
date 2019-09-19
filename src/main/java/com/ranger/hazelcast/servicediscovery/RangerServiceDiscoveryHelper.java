@@ -57,6 +57,8 @@ class RangerServiceDiscoveryHelper {
                     .withHostname(hostname)
                     .withPort(port)
                     .withHealthcheck(() -> HealthcheckStatus.healthy)
+                    .withHealthUpdateIntervalMs(10000)
+                    .withStaleUpdateThresholdMs(60000)
                     .buildServiceDiscovery();
             serviceProvider.start();
         }
@@ -65,6 +67,7 @@ class RangerServiceDiscoveryHelper {
                     .withConnectionString(zkConnectionString)
                     .withNamespace(namespace)
                     .withServiceName(serviceName)
+                    .withDisableWatchers(true)
                     .withDeserializer(data -> {
                         try {
                             return objectMapper.readValue(data,
