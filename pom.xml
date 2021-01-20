@@ -47,7 +47,7 @@
         <hazelcast.version>3.12.2</hazelcast.version>
         <ranger.version>0.6.2</ranger.version>
         <junit.version>4.12</junit.version>
-        <jackson.version>2.9.6</jackson.version>
+        <jackson.version>2.12.1</jackson.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
