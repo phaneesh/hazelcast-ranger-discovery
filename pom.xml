@@ -48,7 +48,7 @@
         <hazelcast.client.version>3.12.12</hazelcast.client.version>
         <ranger.version>0.6.3</ranger.version>
         <junit.version>4.12</junit.version>
-        <jackson.version>2.10.5</jackson.version>
+        <jackson.version>2.12.3</jackson.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
