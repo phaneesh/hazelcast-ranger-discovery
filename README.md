@@ -33,7 +33,7 @@ Use the following maven dependency:
 <dependency>
     <groupId>com.ranger.hazelcast.servicediscovery</groupId>
     <artifactId>hazelcast-ranger-discovery</artifactId>
-    <version>0.2.0</version>
+    <version>4.2-1</version>
 </dependency>
 ```
 

@@ -17,8 +17,8 @@
 package com.ranger.hazelcast.servicediscovery;
 
 import com.google.common.base.Strings;
+import com.hazelcast.cluster.Address;
 import com.hazelcast.logging.ILogger;
-import com.hazelcast.nio.Address;
 import com.hazelcast.spi.discovery.AbstractDiscoveryStrategy;
 import com.hazelcast.spi.discovery.DiscoveryNode;
 import com.hazelcast.spi.discovery.SimpleDiscoveryNode;
@@ -65,7 +65,7 @@ public class RangerDiscoveryStrategy extends AbstractDiscoveryStrategy {
 
     public Iterable<DiscoveryNode> discoverNodes() {
         return rangerServiceDiscoveryHelper.getAllNodes().stream().map( n -> {
-            Map<String, Object> attributes = Collections.singletonMap("hostname", n.getHost());
+            Map<String, String> attributes = Collections.singletonMap("hostname", n.getHost());
             try {
                 return new SimpleDiscoveryNode(new Address(n.getHost(), n.getPort()), attributes);
             } catch (UnknownHostException e) {
