@@ -44,13 +44,16 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hazelcast.version>4.2</hazelcast.version>
+        <hazelcast.version>5.2.3</hazelcast.version>
         <hazelcast.client.version>3.12.12</hazelcast.client.version>
-        <ranger.version>0.6.3</ranger.version>
-        <junit.version>4.12</junit.version>
-        <jackson.version>2.10.5</jackson.version>
+        <ranger.version>1.0-RC10</ranger.version>
+        <junit.version>4.13.1</junit.version>
+        <jackson.version>2.15.0</jackson.version>
+        <lombok.version>1.18.26</lombok.version>
+        <logback.version>1.2.10</logback.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <zookeeper.version>3.6.3</zookeeper.version>
     </properties>
 
     <repositories>
@@ -66,26 +69,57 @@
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast</artifactId>
             <version>${hazelcast.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast-client</artifactId>
             <version>${hazelcast.client.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.flipkart.ranger</groupId>
-            <artifactId>ranger</artifactId>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.appform.ranger</groupId>
+            <artifactId>ranger-core</artifactId>
             <version>${ranger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.appform.ranger</groupId>
+            <artifactId>ranger-zookeeper</artifactId>
+            <version>${ranger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.appform.ranger</groupId>
+            <artifactId>ranger-zk-client</artifactId>
+            <version>${ranger.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.appform.ranger</groupId>
+            <artifactId>ranger-server-common</artifactId>
+            <version>${ranger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>${zookeeper.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
             <version>${jackson.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -96,7 +130,25 @@
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-test</artifactId>
-            <version>3.1.0</version>
+            <version>5.1.0</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.7</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
