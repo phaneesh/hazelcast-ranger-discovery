@@ -1,10 +1,11 @@
 # Hazelcast Ranger Discovery [![Travis build status](https://travis-ci.org/phaneesh/hazelcast-ranger-discovery.svg?branch=master)](https://travis-ci.org/phaneesh/hazelcast-ranger-discovery)
 
-This is a discovery strategy extension for Hazelcast to make discovery work on [ranger](https://github.com/flipkart-incubator/ranger).
+This is a discovery strategy extension for Hazelcast to make discovery work on [ranger](https://github.com/appform-io/ranger).
 This library compiles only on Java 8.
  
 ## Dependencies
-* ranger 0.6.2  
+* ranger 1.0-RC10  
+* Hazelcast 5.3.2
 
 ## Usage
 Hazelcast Ranger Discovery provides a easy way to enable member discovery with elastic applications on docker & DCOS 
@@ -33,7 +34,7 @@ Use the following maven dependency:
 <dependency>
     <groupId>com.ranger.hazelcast.servicediscovery</groupId>
     <artifactId>hazelcast-ranger-discovery</artifactId>
-    <version>4.2-1</version>
+    <version>5.2.3-1</version>
 </dependency>
 ```
 
@@ -59,6 +60,10 @@ discoveryStrategyConfig.addProperty("zk-connection-string", testingCluster.getCo
 discoveryStrategyConfig.addProperty("namespace", "hz_disco");
 //Service name that needs to be used
 discoveryStrategyConfig.addProperty("service-name", "hz_disco_test");
+//Set the refresh interval. Default value is 5000
+discoveryStrategyConfig.addProperty("health-update-interval-ms", 3000);
+//Set the stale update threshold. Default value is 16000 (allows for 3 missed updates)
+discoveryStrategyConfig.addProperty("health-update-interval-ms", 31000);
 discoveryConfig.addDiscoveryStrategyConfig(discoveryStrategyConfig);
 //Create the hazelcast instance
 HazelcastInstance hazelcast = Hazelcast.newHazelcastInstance(config);

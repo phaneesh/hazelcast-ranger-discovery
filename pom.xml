@@ -45,7 +45,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <hazelcast.version>5.2.3</hazelcast.version>
-        <hazelcast.client.version>3.12.12</hazelcast.client.version>
         <ranger.version>1.0-RC10</ranger.version>
         <curator.version>5.1.0</curator.version>
         <junit.version>4.13.1</junit.version>

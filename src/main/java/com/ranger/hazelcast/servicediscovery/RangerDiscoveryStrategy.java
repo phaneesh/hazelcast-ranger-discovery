@@ -19,16 +19,14 @@ package com.ranger.hazelcast.servicediscovery;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
 import com.hazelcast.cluster.Address;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.spi.discovery.AbstractDiscoveryStrategy;
 import com.hazelcast.spi.discovery.DiscoveryNode;
 import com.hazelcast.spi.discovery.SimpleDiscoveryNode;
-import io.appform.ranger.client.zk.UnshardedRangerZKHubClient;
+import io.appform.ranger.client.zk.SimpleRangerZKClient;
 import io.appform.ranger.common.server.ShardInfo;
 import io.appform.ranger.core.healthcheck.Healthchecks;
-import io.appform.ranger.core.model.Service;
 import io.appform.ranger.core.model.ServiceNode;
 import io.appform.ranger.core.serviceprovider.ServiceProvider;
 import io.appform.ranger.zookeeper.ServiceProviderBuilders;
@@ -39,7 +37,6 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryForever;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Map;
@@ -55,42 +52,43 @@ public class RangerDiscoveryStrategy extends AbstractDiscoveryStrategy {
 
     private final ILogger logger;
     @Getter
-    private CuratorFramework curator;
+    private final CuratorFramework curator;
 
     private ServiceProvider<ShardInfo, ZkNodeDataSerializer<ShardInfo>> serviceProvider;
 
-    private UnshardedRangerZKHubClient<ShardInfo> rangerClient;
+    private final SimpleRangerZKClient<ShardInfo> rangerClient;
 
-    private final Service service;
+    private final String serviceName;
+
+    private final int refreshIntervalMs;
+
+    private final int staleUpdateThresholdMs;
+
+    private final boolean isMember;
     
     public RangerDiscoveryStrategy(final DiscoveryNode discoveryNode, final ILogger logger, Map<String, Comparable> properties) {
         super(logger, properties);
         String zkConnectionString = getOrNull(CONFIG_PREFIX, RangerDiscoveryConfiguration.ZK_CONNECTION_STRING);
         String namespace = getOrNull(CONFIG_PREFIX, RangerDiscoveryConfiguration.NAMESPACE);
-        String serviceName = getOrNull(CONFIG_PREFIX, RangerDiscoveryConfiguration.SERVICE_NAME);
-        this.service = Service.builder()
-                .namespace(namespace)
-                .serviceName(serviceName)
-                .build();
+        this.serviceName = getOrNull(CONFIG_PREFIX, RangerDiscoveryConfiguration.SERVICE_NAME);
+        this.refreshIntervalMs = getOrDefault(CONFIG_PREFIX, RangerDiscoveryConfiguration.HEALTH_UPDATE_INTERVAL_MS, 5000);
+        this.staleUpdateThresholdMs = getOrDefault(CONFIG_PREFIX, RangerDiscoveryConfiguration.STALE_UPDATE_THRESHOLD_INTERVAL_MS, 16000);
         this.logger = logger;
         this.objectMapper = new ObjectMapper();
-        try {
-            String host = discoveryNode != null ? discoveryNode.getPublicAddress().getHost() : null;
-            if(!InetAddress.getLocalHost().getHostAddress().equals(host) && Strings.isNullOrEmpty(host))
-                host = InetAddress.getLocalHost().getHostAddress();
-            int port = discoveryNode != null ? discoveryNode.getPublicAddress().getPort() : 0;
-            this.curator = buildCurator(zkConnectionString, namespace);
+        this.isMember = discoveryNode != null;
+        this.curator = buildCurator(zkConnectionString, namespace);
+        if(isMember) {
+            String host = discoveryNode.getPublicAddress().getHost();
+            int port = discoveryNode.getPublicAddress().getPort();
             this.serviceProvider = buildServiceProvider(objectMapper, namespace, serviceName, host, port);
-            this.rangerClient = buildDiscoveryClient(namespace);
-        } catch (Exception e) {
-           logger.severe("Failed to start service discovery!", e);
         }
+        this.rangerClient = buildDiscoveryClient(namespace);
     }
 
     public Iterable<DiscoveryNode> discoverNodes() {
         try {
-            if( rangerClient != null && rangerClient.getAllNodes(service) != null) {
-                return rangerClient.getAllNodes(service).stream().map(n -> {
+            if( rangerClient != null && rangerClient.getAllNodes() != null) {
+                return rangerClient.getAllNodes().stream().map(n -> {
                     Map<String, String> attributes = Collections.singletonMap("hostname", n.getHost());
                     try {
                         return new SimpleDiscoveryNode(new Address(n.getHost(), n.getPort()), attributes);
@@ -134,18 +132,26 @@ public class RangerDiscoveryStrategy extends AbstractDiscoveryStrategy {
                     return null;
                 })
                 .withHostname(hostname)
+                .withNodeData(ShardInfo.builder()
+                        .region(System.getenv("CONFIG_ENV"))
+                        .tags(Collections.emptySet())
+                        .environment(System.getenv("CONFIG_ENV"))
+                        .build())
                 .withPort(port)
                 .withHealthcheck(Healthchecks.defaultHealthyCheck())
-                .withHealthUpdateIntervalMs(5000)
-                .withStaleUpdateThresholdMs(15000)
+                .withHealthUpdateIntervalMs(refreshIntervalMs)
+                .withStaleUpdateThresholdMs(staleUpdateThresholdMs)
                 .build();
     }
 
-    private UnshardedRangerZKHubClient<ShardInfo> buildDiscoveryClient(String namespace) {
-        return UnshardedRangerZKHubClient.<ShardInfo>builder()
+    private SimpleRangerZKClient<ShardInfo> buildDiscoveryClient(String namespace) {
+        return SimpleRangerZKClient.<ShardInfo>builder()
                 .curatorFramework(curator)
                 .namespace(namespace)
                 .mapper(objectMapper)
+                .serviceName(serviceName)
+                .disableWatchers(true)
+                .nodeRefreshIntervalMs(refreshIntervalMs)
                 .deserializer(data -> {
                     try {
                         return objectMapper.readValue(data, new TypeReference<ServiceNode<ShardInfo>>() {});
@@ -161,15 +167,21 @@ public class RangerDiscoveryStrategy extends AbstractDiscoveryStrategy {
 
     @Override
     public void start() {
-        serviceProvider.start();
+        curator.start();
+        if(isMember) {
+            serviceProvider.start();
+        }
         rangerClient.start();
         logger.info("Ranger discovery initialized successfully");
     }
 
     @Override
     public void destroy() {
-        serviceProvider.stop();
+        if(isMember) {
+            serviceProvider.stop();
+        }
         rangerClient.stop();
         curator.close();
+        logger.info("Ranger discovery stopped successfully");
     }
 }

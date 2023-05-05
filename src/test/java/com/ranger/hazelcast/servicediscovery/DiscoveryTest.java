@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -87,9 +86,7 @@ public class DiscoveryTest {
         config.setProperty("hazelcast.socket.client.bind.any", "true");
         config.setProperty("hazelcast.socket.bind.any", "true");
         config.getJetConfig().setEnabled(true);
-
         NetworkConfig networkConfig = config.getNetworkConfig();
-        //networkConfig.setPublicAddress(InetAddress.getLocalHost().getHostAddress() + ":" + port);
         networkConfig.getInterfaces().addInterface(InetAddress.getLocalHost().getHostAddress()).setEnabled(true);
         JoinConfig joinConfig = networkConfig.getJoin();
         joinConfig.getTcpIpConfig().setEnabled(false);
@@ -104,12 +101,9 @@ public class DiscoveryTest {
         return Hazelcast.newHazelcastInstance(config);
     }
 
-    private HazelcastInstance getHazelcastClientInstance() throws UnknownHostException {
+    private HazelcastInstance getHazelcastClientInstance() {
         ClientConfig config = new ClientConfig();
         config.setProperty("hazelcast.discovery.enabled", "true");
-        config.setProperty("hazelcast.discovery.public.ip.enabled", "true");
-        config.setProperty("hazelcast.socket.client.bind.any", "true");
-        config.setProperty("hazelcast.socket.bind.any", "true");
         DiscoveryConfig discoveryConfig = config.getNetworkConfig().getDiscoveryConfig();
         DiscoveryStrategyConfig discoveryStrategyConfig = new DiscoveryStrategyConfig(new RangerDiscoveryStrategyFactory());
         discoveryStrategyConfig.addProperty("zk-connection-string", testingCluster.getConnectString());
