@@ -22,28 +22,28 @@ import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import org.apache.curator.test.TestingCluster;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import static org.junit.Assert.assertTrue;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DiscoveryTest {
 
     private TestingCluster testingCluster;
 
-    @Before
+    @BeforeEach
     public void startTestCluster() throws Exception {
-        testingCluster = new TestingCluster(3);
+        testingCluster = new TestingCluster(1);
         testingCluster.start();
     }
 
-    @After
+    @AfterEach
     public void stopTestCluster() throws Exception {
         if(null != testingCluster) {
             testingCluster.close();
@@ -63,7 +63,7 @@ public class DiscoveryTest {
         HazelcastInstance hazelcast2 = getHazelcastInstance();
         HazelcastInstance hazelcast3 = getHazelcastInstance();
         assertTrue(hazelcast3.getCluster().getMembers().size() > 0);
-        assertTrue(hazelcast3.getCluster().getMembers().size() == 3);
+        assertEquals(3, hazelcast3.getCluster().getMembers().size());
         hazelcast1.shutdown();
         hazelcast2.shutdown();
         hazelcast3.shutdown();
@@ -76,9 +76,8 @@ public class DiscoveryTest {
         HazelcastInstance hazelcast3 = getHazelcastInstance();
         HazelcastInstance hazelcastInstance = getHazelcastClientInstance();
         assertTrue(hazelcastInstance.getCluster().getMembers().size() > 0);
-        assertTrue(hazelcastInstance.getCluster().getMembers().size() == 3);
+        assertEquals(3, hazelcastInstance.getCluster().getMembers().size());
     }
-
 
     private HazelcastInstance getHazelcastInstance() throws UnknownHostException {
         Config config = new Config();
@@ -86,8 +85,8 @@ public class DiscoveryTest {
         config.setProperty("hazelcast.discovery.public.ip.enabled", "true");
         config.setProperty("hazelcast.socket.client.bind.any", "true");
         config.setProperty("hazelcast.socket.bind.any", "true");
+        config.getJetConfig().setEnabled(true);
         NetworkConfig networkConfig = config.getNetworkConfig();
-        //networkConfig.setPublicAddress(InetAddress.getLocalHost().getHostAddress() + ":" + port);
         networkConfig.getInterfaces().addInterface(InetAddress.getLocalHost().getHostAddress()).setEnabled(true);
         JoinConfig joinConfig = networkConfig.getJoin();
         joinConfig.getTcpIpConfig().setEnabled(false);
@@ -102,13 +101,9 @@ public class DiscoveryTest {
         return Hazelcast.newHazelcastInstance(config);
     }
 
-
-    private HazelcastInstance getHazelcastClientInstance() throws UnknownHostException {
+    private HazelcastInstance getHazelcastClientInstance() {
         ClientConfig config = new ClientConfig();
         config.setProperty("hazelcast.discovery.enabled", "true");
-        config.setProperty("hazelcast.discovery.public.ip.enabled", "true");
-        config.setProperty("hazelcast.socket.client.bind.any", "true");
-        config.setProperty("hazelcast.socket.bind.any", "true");
         DiscoveryConfig discoveryConfig = config.getNetworkConfig().getDiscoveryConfig();
         DiscoveryStrategyConfig discoveryStrategyConfig = new DiscoveryStrategyConfig(new RangerDiscoveryStrategyFactory());
         discoveryStrategyConfig.addProperty("zk-connection-string", testingCluster.getConnectString());

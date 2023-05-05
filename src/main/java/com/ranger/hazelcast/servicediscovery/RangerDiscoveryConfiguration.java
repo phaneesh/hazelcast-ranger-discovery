@@ -28,6 +28,10 @@ class RangerDiscoveryConfiguration {
 
     static final PropertyDefinition SERVICE_NAME = new SimplePropertyDefinition("service-name", PropertyTypeConverter.STRING);
 
+    static final PropertyDefinition HEALTH_UPDATE_INTERVAL_MS = new SimplePropertyDefinition("health-update-interval-ms", PropertyTypeConverter.INTEGER);
+
+    static final PropertyDefinition STALE_UPDATE_THRESHOLD_INTERVAL_MS = new SimplePropertyDefinition("stale-update-threshold-ms", PropertyTypeConverter.INTEGER);
+
     private RangerDiscoveryConfiguration() {
 
     }
